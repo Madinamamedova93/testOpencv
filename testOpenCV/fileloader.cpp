@@ -17,14 +17,9 @@ void FileLoader::Run()
     while (!m_IsStopped)
         {
             std::string filePath;
-            if (m_Queue.GetNext(filePath))
-            {
-                std::cout << "FileLoader m_Queue 1" << std::endl;
+            if (m_Queue.GetNext(filePath)) {
                 std::shared_ptr<cv::Mat> imgPtr = std::make_shared<cv::Mat>(cv::imread(filePath));
-                std::cout << "FileLoader m_Queue 2" << std::endl;
                 consumer->AddImage(imgPtr);
-                std::cout << "FileLoader m_Queue 3" << std::endl;
-
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
