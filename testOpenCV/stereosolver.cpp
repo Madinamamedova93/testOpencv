@@ -1,31 +1,9 @@
 #include "stereosolver.h"
 
-std::vector<cv::Point3f> convertMatToPointsCloud(std::shared_ptr<cv::Mat> img){//const cv::Mat& img) {
-  std::vector<cv::Point3f> outArray;
-  if (img->type() == CV_8UC1) {
-      std::cout<<"first if"<<std::endl;
-    for (int r = 0; r < img->rows; ++r) {
-      for (int c = 0; c < img->cols; ++c) {
-        if (img->at<unsigned char>(r, c) > 5) {
-          outArray.push_back(cv::Point3f(r, c, img->at<unsigned char>(r, c)));
-        }
-      }
-    }
-    std::cout<<"OK"<<std::endl;
-  } else {
-    std::cout << "std::vector<cv::Point3f> convertMatToPointsCloud(const "
-                 "cv::Mat& img) need CV_8UC1 mat as input. Current type is:"
-              << img->type() << std::endl;
-  }
-  return outArray;
-}
-
-stereogramSolver::stereogramSolver() : m_countThreads(1) {
-  std::cout << "stereogramSolver::stereogramSolver() " << this << std::endl;
-}
+stereogramSolver::stereogramSolver() : m_countThreads(1) {}
 
 stereogramSolver::~stereogramSolver() {
-  std::cout << "stereogramSolver::~stereogramSolver()" << this << std::endl;
+
   for (const auto& i : m_threads) {
     if (i) {
       i->join();
@@ -45,16 +23,13 @@ std::shared_ptr<cv::Mat> stereogramSolver::reconstructDepthMap(std::shared_ptr<c
   }
   m_countThreads = countThreads <= stereogram->rows ? countThreads : stereogram->rows;
 
-  // find offset
   int offset = findRepeatOffset(stereogram);
   if (offset <= 0) {
     return std::make_shared<cv::Mat>();
   }
 
-  // calc height each chunk
   int step = stereogram->rows / countThreads;
 
-  // split input image on chunks for faster processing in parallel threads
   std::vector<cv::Mat> chunksStereogram;
   for (int i = 0; i < m_countThreads; i++) {
     chunksStereogram.push_back((*stereogram)(
@@ -65,13 +40,11 @@ std::shared_ptr<cv::Mat> stereogramSolver::reconstructDepthMap(std::shared_ptr<c
                                                : stereogram->rows - i * step)));
   }
 
-  // prepare storage for out depthmap of each chunck
   std::vector<cv::Mat*> chunksDepthMap;
   for (size_t i = 0; i < chunksStereogram.size(); ++i) {
     chunksDepthMap.push_back(new cv::Mat());
   }
 
-  // run threads
   for (int i = 0; i < chunksStereogram.size(); i++) {
     m_threads.push_back(
         new std::thread(&stereogramSolver::reconstructDepthMapPartImg, this,
@@ -80,14 +53,13 @@ std::shared_ptr<cv::Mat> stereogramSolver::reconstructDepthMap(std::shared_ptr<c
     std::cout << "Thread " << i << " was started.." << std::endl;
   }
 
-  // wait all threads join
   for (auto& i : m_threads) {
     if (i)
       i->join();
   }
 
   std::cout << "All threads finished!!" << std::endl;
-  // repair depth map from chunks
+
   cv::Mat depthMap(stereogram->rows, stereogram->cols - offset, CV_8UC1,
                    cv::Scalar::all(255));
   int yOffset = 0;
@@ -96,12 +68,11 @@ std::shared_ptr<cv::Mat> stereogramSolver::reconstructDepthMap(std::shared_ptr<c
     i->copyTo(depthMap(cv::Rect(0, yOffset, i->cols, i->rows)));
     yOffset += i->rows;
 
-    // clear chunksDepthMap memory
     if (i)
       delete i;
     i = nullptr;
   }
-  // clear m_thread memory
+
   for (auto& i : m_threads) {
     if (i)
       delete i;
@@ -188,12 +159,8 @@ void stereogramSolver::reconstructDepthMapPartImg(
   for (int r = 0; r < partOfStereogram.rows; r++) {
     for (int c = 0; c < partOfStereogram.cols - offset - MATCH_BLOCKS_WIDTH;
          c++) {
-      // std::vector<unsigned char> pixelAfterOffset;
       cv::Rect zoneAfterOffset(c + offset, r, MATCH_BLOCKS_WIDTH, 1);
-      /*for (int nChannel = 0; nChannel < image.channels(); ++nChannel) {
-      pixelAfterOffset.push_back(image.at<unsigned char>(r, (c + offset) *
-      image.channels() + nChannel));
-      }*/
+
       int bestDepth = 0;
       double bestDiff = -1;
       for (int depth = 0; depth < offset / 2; ++depth) {
