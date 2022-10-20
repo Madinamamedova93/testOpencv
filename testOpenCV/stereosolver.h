@@ -11,17 +11,17 @@
 #define MATCH_BLOCKS_WIDTH 10
 
 
-std::vector<cv::Point3f> convertMatToPointsCloud(const cv::Mat& img);
+std::vector<cv::Point3f> convertMatToPointsCloud(std::shared_ptr<cv::Mat> img);
 
 class stereogramSolver {
  public:
   stereogramSolver();
   ~stereogramSolver();
 
-  cv::Mat reconstructDepthMap(const cv::Mat& stereogram, int countThreads = 1);
+  std::shared_ptr<cv::Mat> reconstructDepthMap(std::shared_ptr<cv::Mat>  stereogram, int countThreads = 1);
 
  private:
-  int findRepeatOffset(const cv::Mat& stereogram) const;
+  int findRepeatOffset(std::shared_ptr<cv::Mat> stereogram) const;
   void reconstructDepthMapPartImg(const cv::Mat partOfStereogram,
                                   cv::Mat* outDepthMap,
                                   int offset,
