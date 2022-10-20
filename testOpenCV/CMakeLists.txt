@@ -20,17 +20,15 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-set(VTK_LIBRARIES vtkRendering vtkGraphics vtkHybrid QVTK)
-
 add_executable(testOpenCV
     main.cpp
     imageset.cpp imageset.h
     fileloader.cpp fileloader.h
     consumer.cpp consumer.h
     pclProcessor.cpp pclProcessor.h
+    stereosolver.cpp stereosolver.h
     ConcurrentQueue.h
     )
 
-target_link_libraries( testOpenCV ${OpenCV_LIBS} ${BOOST_LIBRARIES} ${PCL_LIBRARIES} )
-    #${VTK_LIBRARIES})
+target_link_libraries( testOpenCV ${OpenCV_LIBS} ${BOOST_LIBRARIES} ${PCL_LIBRARIES} ${VTK_LIBRARIES})
 
