@@ -4,6 +4,7 @@
 
 #include <deque>
 #include <mutex>
+#include "stereosolver.h"
 
 template <class T>
 class ConcurrentQueue
@@ -31,6 +32,7 @@ private:
 
     std::mutex m_Mutex;
     std::deque<T> m_Queue;
+    stereogramSolver stereogram;
 
 };
 
