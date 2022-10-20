@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <thread>
 
@@ -9,18 +10,12 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-
 using namespace std;
-using namespace cv;
 namespace fs = boost::filesystem;
-
 
 bool is_right_path(const std::string& path)
 {
-    try
-    {
+    try {
         if (!fs::exists(path)) {
             std::cout << "Path Not exists" << std::endl;
             return 0;
@@ -50,8 +45,7 @@ int main(int argc, char* argv[])
     if (argc > 1)
     {
         std::cout << "start" << std::endl;
-        if (is_right_path(argv[1]))
-        {
+        if (is_right_path(argv[1])) {
             ImageSet imgSt(argv[1]);
 
             auto consumer = std::make_shared<Consumer>();
@@ -63,22 +57,18 @@ int main(int argc, char* argv[])
             fileLoader->LoadFile(imgSt.getCurrentFile());
 
             bool m_IsStopped = false;
-            while (!m_IsStopped)
-            {
+            while (!m_IsStopped) {
                 std::string key = consumer->getKey();
 
-                if (key == "Right")
-                {
+                if (key == "Right") {
                     fileLoader->LoadFile(imgSt.getNextFile());
                     consumer->resetKey();
                 }
-                else if (key == "Left")
-                {
+                else if (key == "Left") {
                     fileLoader->LoadFile(imgSt.getPrevFile());
                     consumer->resetKey();
                 }
-                else if (key == "Escape")
-                {
+                else if (key == "Escape") {
                     fileLoader->Stop();
                     consumer->stop();
                     m_IsStopped = true;
