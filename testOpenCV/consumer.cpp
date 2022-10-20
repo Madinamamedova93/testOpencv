@@ -25,12 +25,8 @@ void Consumer::Run()
             if (m_Queue.GetNext(img))
             {
                 std::shared_ptr<cv::Mat> depthMap = solver.reconstructDepthMap(img, 1);
-                std::cout << "ImageProcessor m_Queue 1" << std::endl;
-                //std::vector<cv::Point3f> cloud = convertMatToPointsCloud(depthMap);
-                pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = img_to_cloud(depthMap);// img_to_cloud(img);
-                std::cout << "ImageProcessor m_Queue 2" << std::endl;
+                pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = img_to_cloud(depthMap);
                 draw_cloud(cloud);
-                std::cout << "ImageProcessor m_Queue 3" << std::endl;
             }
             if (m_Viewer != nullptr && !m_Viewer->wasStopped())
             {
