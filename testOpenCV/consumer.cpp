@@ -18,13 +18,16 @@ void Consumer::AddImage(std::shared_ptr<cv::Mat> image)
 void Consumer::Run()
 {
     std::vector<cv::Point3d> points;
+    stereogramSolver solver;
         while (!m_IsStopped)
-        {
+        {            
             std::shared_ptr<cv::Mat> img;
             if (m_Queue.GetNext(img))
             {
+                std::shared_ptr<cv::Mat> depthMap = solver.reconstructDepthMap(img, 1);
                 std::cout << "ImageProcessor m_Queue 1" << std::endl;
-                pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = img_to_cloud(img);// img_to_cloud(img);
+                //std::vector<cv::Point3f> cloud = convertMatToPointsCloud(depthMap);
+                pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = img_to_cloud(depthMap);// img_to_cloud(img);
                 std::cout << "ImageProcessor m_Queue 2" << std::endl;
                 draw_cloud(cloud);
                 std::cout << "ImageProcessor m_Queue 3" << std::endl;
@@ -43,11 +46,12 @@ void Consumer::Run()
 
 }
 
-void Consumer::draw_cloud(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud)
+void Consumer::draw_cloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud)
 {
     std::cout << "draw_cloud" << std::endl;
     if (m_Viewer == nullptr)
     {
+        cout<<"NULL "<<endl;
         m_Viewer = std::make_shared<pcl::visualization::PCLVisualizer>("3D Viewer");
         m_Viewer->registerKeyboardCallback(&Consumer::keyboard_callback, *this);
     }
