@@ -4,6 +4,7 @@
 #define CONSUMER_H
 
 #include "ConcurrentQueue.h"
+#include "stereosolver.h"
 
 #include <iostream>
 
@@ -19,7 +20,7 @@ public:
     std::string getKey();
     void resetKey();
     void stop();
-    void draw_cloud(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud);
+    void draw_cloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud);
     void keyboard_callback(const pcl::visualization::KeyboardEvent& event, void* );
 
 private:
@@ -28,6 +29,7 @@ private:
     std::string key_arrow;
     int m_Key = -1;
     std::shared_ptr<pcl::visualization::PCLVisualizer> m_Viewer;
+    //stereogramSolver solver;
 
 };
 
