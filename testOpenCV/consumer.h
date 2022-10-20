@@ -29,7 +29,6 @@ private:
     std::string key_arrow;
     int m_Key = -1;
     std::shared_ptr<pcl::visualization::PCLVisualizer> m_Viewer;
-    //stereogramSolver solver;
 
 };
 
