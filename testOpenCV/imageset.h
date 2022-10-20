@@ -11,18 +11,16 @@ class ImageSet
 public:
 
     ImageSet(const std::string& path);
+    ~ImageSet() {}
 
     std::string getCurrentFile();
     std::string getNextFile();
     std::string getPrevFile();
 
-    bool is_right_type(const std::string& filename);
-
+private:
     std::string Imgpath;
     std::set<std::string> filenames;
     std::string currentFile;
-
-    ~ImageSet() {}
 };
 
 #endif // IMAGESET_H
